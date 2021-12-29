@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-contract Tranactions {
+contract Transactions {
     uint256 transactionCount;
     //event allow you to write data on the block change
     event Transfer(
@@ -33,7 +33,7 @@ contract Tranactions {
         //increment tranaction count
         transactionCount += 1;
 
-        //add the tranaction to the tranactions array
+        //add the tranaction to the transactions array
         transactions.push(
             TransferStruct(
                 msg.sender,

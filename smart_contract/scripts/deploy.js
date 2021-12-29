@@ -1,6 +1,6 @@
 //main executes and delpoys the smart contract
 const main = async () => {
-  const Transactions = await hre.ethers.getContractFactory("Trnansactions");
+  const Transactions = await hre.ethers.getContractFactory("Transactions");
   const transactions = await Transactions.deploy();
 
   await transactions.deployed();
