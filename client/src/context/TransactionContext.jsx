@@ -17,11 +17,15 @@ const getEtherumContract = () => {
     signer
   );
 
-  console.log({ provider, signer, transactionContract });
+  return transactionContract;
 };
 
 export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [transactionCount, setTransactionCount] = useState(
+    localStorage.getItem("transactionCount")
+  );
 
   //get form data
   const [formData, setFormData] = useState({
@@ -76,7 +80,39 @@ export const TransactionProvider = ({ children }) => {
 
       //get data from the form
       const { addressTo, amount, keyword, message } = formData;
-      getEtherumContract();
+      const transactionContract = getEtherumContract();
+      const parsedAmount = ethers.utils.parseEther(amount);
+
+      //send eth
+      await ethereum.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            from: currentAccount,
+            to: addressTo,
+            gas: "0x5208", //21000 Wei
+            value: parsedAmount._hex,
+          },
+        ],
+      });
+
+      //Store Transaction
+      const transactionHash = await transactionContract.addToBlockchain(
+        addressTo,
+        parsedAmount,
+        message,
+        keyword
+      );
+
+      setIsLoading(true);
+      console.log(`Loading - ${tranactionHash.hash}`);
+      await tranactionHash.wait();
+      setIsLoading(false);
+      console.log(`Success - ${tranactionHash.hash}`);
+
+      const transactionCount = await transactionContract.getTransactionCount();
+
+      setTransactionCount(transactionCount.toNumber());
     } catch (err) {
       console.log(err);
       throw new Error("No ethereum object.");
